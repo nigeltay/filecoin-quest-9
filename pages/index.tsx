@@ -89,38 +89,15 @@ export default function Home() {
       );
 
       //(1) call the getDataDaoList function from the contract to get all Data Dao contract addresses
-      const allDataDaoAddresses =
-        await dataDAOManagerContractInstance.getDataDaoList();
 
       //(2) call getDataDaoInformation function from contract to retrieve all information on each Data DAO
-      const allDataDaoData =
-        await dataDAOManagerContractInstance.getDataDaoInformation(
-          allDataDaoAddresses
-        );
 
       // declare new array
       let newDataDAOs = [];
 
       //(3) iterate and loop through the data retrieve from the blockchain
-      for (let i = 0; i < allDataDaoData.sellerAddress.length; i++) {
-        let sellerAddress: string = allDataDaoData.sellerAddress[i];
-        let title: string = allDataDaoData.title[i];
-        let description: string = allDataDaoData.description[i];
-        let price = allDataDaoData.price[i];
-        let dataDaoSCAddress: string = allDataDaoAddresses[i];
 
-        let newDataDao: DataDao = {
-          sellerAddress,
-          title,
-          description,
-          price: (price / 1000000000000000000).toString(), //ethers/TFIL has 18 decimal places
-          dataDaoSCAddress,
-        };
-        //add into array
-        newDataDAOs.push(newDataDao);
-      }
       //(4) set data into react state variable
-      setAllDataDao(newDataDAOs);
     }
   }
 
@@ -165,16 +142,10 @@ export default function Home() {
         );
 
         // (5) call dataDAO Manager create dataDAO function from the contract
-        let { hash } = await dataDAOManagerContractInstance.createDataDao(
-          title,
-          description,
-          ethers.utils.parseEther(price.toString()),
-          cid
-        );
+
         // (6) wait for transaction to be mined
-        await provider.waitForTransaction(hash);
+
         // (7) display alert message
-        alert(`Transaction sent! Hash: ${hash}`);
       }
 
       //call getAllDataSets function to refresh the current list of dataDaoSets
@@ -211,21 +182,12 @@ export default function Home() {
         const signer = provider.getSigner();
 
         // (8) create DataDAO contract instance
-        const dataDAOContractInstance = new ethers.Contract(
-          dataDao.dataDaoInfo.dataDaoSCAddress,
-          dataDaoABI,
-          signer
-        );
 
         // (9) call buyDataSet function from the dataDao smart contract
-        let { hash } = await dataDAOContractInstance.buyDataSet({
-          value: ethers.utils.parseEther(dataDao.dataDaoInfo.price), //amount to transfer to smart contract to hold
-        });
 
         // (10)  wait for transaction to be mined
-        await provider.waitForTransaction(hash);
+
         // (11) display alert message
-        alert(`Transaction sent! Hash: ${hash}`);
 
         //call getActiveDataDaoDetails function to get updated data
         await getActiveDataDaoDetails(dataDao.dataDaoInfo);
@@ -260,12 +222,10 @@ export default function Home() {
         );
 
         // (12) call withdrawFunds function from the dataDao smart contract
-        let { hash } = await dataDAOContractInstance.withdrawFunds();
 
         // (13)  wait for transaction to be mined
-        await provider.waitForTransaction(hash);
+
         // (14) display alert message
-        alert(`Transaction sent! Hash: ${hash}`);
       }
       //call getActiveDataDaoDetails function to get updated data
       await getActiveDataDaoDetails(dataDao.dataDaoInfo);
