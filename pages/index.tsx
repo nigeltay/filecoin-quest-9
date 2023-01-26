@@ -28,11 +28,12 @@ type DataDaoDetails = {
 };
 
 export default function Home() {
-  const dataDAOManagerContract = "0x9Ef0f43FBb256afBE5c7400a1c4a95D1aa5D899C"; //dataDAO Manager smart contract address
+  const dataDAOManagerContract =
+    "REPLACE_YOUR_DAOMANAGER_SMART_CONTRACT_ADDRESS"; //dataDAO Manager smart contract address
 
   //variables
   const [token, setToken] = useState<string>(
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGU5N0RDODlFQ0E3NEUxZEVCNDhDYmY4ZjVCODAwRWRCODM1MjlBOEQiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzI3MTY3MzQ1MDcsIm5hbWUiOiJteVRva2VuIn0.9ycmydenwBvA1a24WGLn4E3kH2C5UYgChY9B4-_ZxJU"
+    "REPLACE_WITH_YOUR_WEB3STORAGE_API_TOKEN"
   );
   const [isLoading, setIsLoading] = useState(false);
   const [loadedData, setLoadedData] = useState("Loading...");
