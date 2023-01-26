@@ -7,6 +7,129 @@
   min-height: 100vh;
 }
 
+.walletAddress {
+  font-family: var(--font-mono);
+  color: white;
+  margin: 20px;
+text-align: right;
+}
+
+.topPanel {
+  display: flex;
+  justify-content: space-between;
+  background-color: purple;
+  padding-left: 5px
+}
+
+.allDatasets {
+  font-family: var(--font-mono);
+  color: black;
+  padding-left: 25px;
+  padding-top: 20px;
+
+}
+
+.createDataset {
+  font-family: var(--font-mono);
+  color: black;
+  margin: 20px;
+}
+
+.createDataContainer {
+  font-family: var(--font-mono);
+  color: black;
+  margin: 20px;
+  border-color: black;
+  border-style: groove;
+}
+
+.dropZoneStyle {
+  outline:  none;
+  overflow: hidden;
+  background-color: lightgray;
+  border: solid;
+  margin: 20px;
+  padding: 40px;
+  width: 500px;
+}
+
+.dropZoneStyle:hover {
+  opacity: 0.52;
+  cursor: pointer;
+  transform: translateY(-0.15em);
+}
+
+.paragraphText {
+  font-family: var(--font-mono);
+  margin: 10px;
+  color: black;
+}
+
+.createDataDAOBtn {
+  margin-top: 10px;
+  padding: 10px;
+  color: white;
+  background-color: blue;
+}
+
+.viewDataDaoBtn {
+  margin: 10px;
+  padding: 10px;
+  background-color: green;
+  color: white;
+}
+
+.activeDataDaoContainer {
+  font-family: var(--font-mono);
+  color: black;
+  margin: 20px;
+}
+
+.detailsText {
+  font-family: var(--font-mono);
+  margin: 10px;
+  margin-left: 10px;
+  color: black;
+  font-size: 0.9em
+}
+
+.hyperlinkText {
+  font-family: var(--font-mono);
+  margin: 5px;
+  color: blue;
+  text-decoration: underline;
+}
+
+
+.backBtn {
+  margin: 10px;
+  padding: 10px;
+  background-color: black;
+  color: white;
+}
+
+.placeOrderBtn {
+  padding: 10px;
+  margin: 10px;
+  background-color: orange;
+  color: white;
+}
+
+.withdrawFundsBtn {
+  padding: 10px;
+  margin: 10px;
+  margin-left: 5px;
+  background-color: red;
+  color: white;
+}
+
+.downloadDataDaoBtn {
+  margin: 10px;
+  padding: 10px;
+  background-color: grey;
+  color: white;
+}
+
 .description {
   display: inherit;
   justify-content: inherit;
