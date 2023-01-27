@@ -367,7 +367,7 @@ export default function Home() {
             getActiveDataDaoDetails(dataDao);
           }}
         >
-          View Post
+          View Details
         </button>
       </div>
     );
