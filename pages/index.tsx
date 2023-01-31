@@ -12,27 +12,28 @@ import { useDropzone } from "react-dropzone";
 import datasetABI from "../utils/datasetABI.json";
 import datasetManagerABI from "../utils/datasetManagerABI.json";
 
-type DataDao = {
+type Dataset = {
   sellerAddress: string;
   title: string;
   description: string;
   price: string;
-  dataDaoSCAddress: string; //Smart contract address of the individual data dao
+  datasetSCAddress: string; //Smart contract address of the individual data dao
 };
 
-type DataDaoDetails = {
-  dataDaoInfo: DataDao;
+type DatasetDetails = {
+  datasetInfo: Dataset;
   buyers: string[];
   cid: string;
   amountCollected: string;
 };
 
 export default function Home() {
-  const dataDAOManagerContract = "0xdF652F24d243f22D12882C9f09ebeFbF55d5e7c1"; //dataDAO Manager smart contract address
+  const datasetManagerContract =
+    "REPLACE_YOUR_DAOMANAGER_SMART_CONTRACT_ADDRESS"; //dataset Manager smart contract address
 
   //variables
   const [token, setToken] = useState<string>(
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGU5N0RDODlFQ0E3NEUxZEVCNDhDYmY4ZjVCODAwRWRCODM1MjlBOEQiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzI3MTY3MzQ1MDcsIm5hbWUiOiJteVRva2VuIn0.9ycmydenwBvA1a24WGLn4E3kH2C5UYgChY9B4-_ZxJU"
+    "REPLACE_WITH_YOUR_WEB3STORAGE_API_TOKEN"
   );
   const [isLoading, setIsLoading] = useState(false);
   const [loadedData, setLoadedData] = useState("Loading...");
@@ -47,9 +48,9 @@ export default function Home() {
   const [description, setDescription] = useState<string>("");
   const [price, setPrice] = useState("");
 
-  const [allDataDao, setAllDataDao] = useState<DataDao[]>([]);
-  const [activeDataDaoDetails, setDataDaoDetails] =
-    useState<DataDaoDetails | null>(null);
+  const [allDatasets, setallDatasets] = useState<Dataset[]>([]);
+  const [activeDatasetDetails, setDatasetDetails] =
+    useState<DatasetDetails | null>(null);
 
   function openModal() {
     setIsLoading(true);
@@ -82,43 +83,43 @@ export default function Home() {
       const signer = provider.getSigner();
 
       //create contract instance
-      const dataDAOManagerContractInstance = new ethers.Contract(
-        dataDAOManagerContract,
+      const datasetManagerContractInstance = new ethers.Contract(
+        datasetManagerContract,
         datasetManagerABI,
         signer
       );
 
-      //(1) call the getDataDaoList function from the contract to get all Data Dao contract addresses
-      const allDataDaoAddresses =
-        await dataDAOManagerContractInstance.getDatasetList();
-      //(2) call getDataDaoInformation function from contract to retrieve all information on each Data DAO
-      const allDataDaoData =
-        await dataDAOManagerContractInstance.getDatasetInformation(
-          allDataDaoAddresses
+      //(1) call the getDatasetList function from the contract to get all Data Dao contract addresses
+      const allDatasetAddresses =
+        await datasetManagerContractInstance.getDatasetList();
+      //(2) call getDatasetInformation function from contract to retrieve all information on each Data DAO
+      const allDatasetData =
+        await datasetManagerContractInstance.getDatasetInformation(
+          allDatasetAddresses
         );
       // declare new array
-      let newDataDAOs = [];
+      let newDatasets = [];
 
       //(3) iterate and loop through the data retrieve from the blockchain
-      for (let i = 0; i < allDataDaoData.sellerAddress.length; i++) {
-        let sellerAddress: string = allDataDaoData.sellerAddress[i];
-        let title: string = allDataDaoData.title[i];
-        let description: string = allDataDaoData.description[i];
-        let price = allDataDaoData.price[i];
-        let dataDaoSCAddress: string = allDataDaoAddresses[i];
+      for (let i = 0; i < allDatasetData.sellerAddress.length; i++) {
+        let sellerAddress: string = allDatasetData.sellerAddress[i];
+        let title: string = allDatasetData.title[i];
+        let description: string = allDatasetData.description[i];
+        let price = allDatasetData.price[i];
+        let datasetSCAddress: string = allDatasetAddresses[i];
 
-        let newDataDao: DataDao = {
+        let newDataset: Dataset = {
           sellerAddress,
           title,
           description,
           price: (price / 1000000000000000000).toString(), //ethers/TFIL has 18 decimal places
-          dataDaoSCAddress,
+          datasetSCAddress,
         };
         //add into array
-        newDataDAOs.push(newDataDao);
+        newDatasets.push(newDataset);
       }
       //(4) set data into react state variable
-      setAllDataDao(newDataDAOs);
+      setallDatasets(newDatasets);
     }
   }
 
@@ -149,21 +150,21 @@ export default function Home() {
       const { ethereum } = window;
       if (ethereum) {
         //set loading modal to open and loading modal text
-        setLoadedData("Uploading DataDAO data to chain...Please wait");
+        setLoadedData("Uploading Dataset data to chain...Please wait");
         openModal();
 
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        //create DataDAO manager contract instance
-        const dataDAOManagerContractInstance = new ethers.Contract(
-          dataDAOManagerContract,
+        //create Dataset manager contract instance
+        const datasetManagerContractInstance = new ethers.Contract(
+          datasetManagerContract,
           datasetManagerABI,
           signer
         );
 
-        // (5) call dataDAO Manager create dataDAO function from the contract
-        let { hash } = await dataDAOManagerContractInstance.createDataset(
+        // (5) call dataset Manager createDataset function from the contract
+        let { hash } = await datasetManagerContractInstance.createDataset(
           title,
           description,
           ethers.utils.parseEther(price.toString()),
@@ -197,7 +198,7 @@ export default function Home() {
     }
   }
 
-  async function buyDataSet(dataDao: DataDaoDetails) {
+  async function buyDataSet(dataset: DatasetDetails) {
     try {
       setLoadedData("Making purchase in progress ...Please wait");
       openModal();
@@ -208,22 +209,22 @@ export default function Home() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        // (8) create DataDAO contract instance
-        const dataDAOContractInstance = new ethers.Contract(
-          dataDao.dataDaoInfo.dataDaoSCAddress,
+        // (8) create Dataset contract instance
+        const datasetContractInstance = new ethers.Contract(
+          dataset.datasetInfo.datasetSCAddress,
           datasetABI,
           signer
         );
-        // (9) call buyDataSet function from the dataDao smart contract
-        let { hash } = await dataDAOContractInstance.buyDataSet({
-          value: ethers.utils.parseEther(dataDao.dataDaoInfo.price), //amount to transfer to smart contract to hold
+        // (9) call buyDataSet function from the dataset smart contract
+        let { hash } = await datasetContractInstance.buyDataSet({
+          value: ethers.utils.parseEther(dataset.datasetInfo.price), //amount to transfer to smart contract to hold
         });
         // (10)  wait for transaction to be mined
         await provider.waitForTransaction(hash);
         // (11) display alert message
         alert(`Transaction sent! Hash: ${hash}`);
-        //call getActiveDataDaoDetails function to get updated data
-        await getActiveDataDaoDetails(dataDao.dataDaoInfo);
+        //call getActiveDatasetDetails function to get updated data
+        await getActiveDatasetDetails(dataset.datasetInfo);
 
         //close modal
         closeModal();
@@ -236,7 +237,7 @@ export default function Home() {
     }
   }
 
-  async function withdrawFunds(dataDao: DataDaoDetails) {
+  async function withdrawFunds(dataset: DatasetDetails) {
     try {
       setLoadedData("Withdrawing funds in progress ...Please wait");
       openModal();
@@ -247,22 +248,22 @@ export default function Home() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        //create DataDAO contract instance
-        const dataDAOContractInstance = new ethers.Contract(
-          dataDao.dataDaoInfo.dataDaoSCAddress,
+        //create Dataset contract instance
+        const datasetContractInstance = new ethers.Contract(
+          dataset.datasetInfo.datasetSCAddress,
           datasetABI,
           signer
         );
 
-        // (12) call withdrawFunds function from the dataDao smart contract
-        let { hash } = await dataDAOContractInstance.withdrawFunds();
+        // (12) call withdrawFunds function from the dataset smart contract
+        let { hash } = await datasetContractInstance.withdrawFunds();
         // (13)  wait for transaction to be mined
         await provider.waitForTransaction(hash);
         // (14) display alert message
         alert(`Transaction sent! Hash: ${hash}`);
       }
-      //call getActiveDataDaoDetails function to get updated data
-      await getActiveDataDaoDetails(dataDao.dataDaoInfo);
+      //call getActiveDatasetDetails function to get updated data
+      await getActiveDatasetDetails(dataset.datasetInfo);
 
       //close modal
       closeModal();
@@ -274,10 +275,10 @@ export default function Home() {
     }
   }
 
-  async function downloadDataSet(dataDao: DataDaoDetails) {
+  async function downloadDataSet(dataset: DatasetDetails) {
     let config: any = {
       method: "get",
-      url: `https://${dataDao.cid}.ipfs.w3s.link/dataset.json`,
+      url: `https://${dataset.cid}.ipfs.w3s.link/dataset.json`,
       headers: {},
     };
     //get dataset json file from web3 stoage via axios
@@ -356,7 +357,7 @@ export default function Home() {
     },
   };
 
-  async function getActiveDataDaoDetails(dataDao: DataDao) {
+  async function getActiveDatasetDetails(dataset: Dataset) {
     const { ethereum } = window;
 
     if (ethereum) {
@@ -364,40 +365,43 @@ export default function Home() {
       const signer = provider.getSigner();
 
       //create contract instance
-      const dataDAOContractInstance = new ethers.Contract(
-        dataDao.dataDaoSCAddress,
+      const datasetContractInstance = new ethers.Contract(
+        dataset.datasetSCAddress,
         datasetABI,
         signer
       );
 
-      const dataDaoInfo = await dataDAOContractInstance.getDetailInformation();
+      const datasetInformation =
+        await datasetContractInstance.getDetailInformation();
 
-      setDataDaoDetails({
-        dataDaoInfo: dataDao,
-        buyers: dataDaoInfo._buyers,
-        cid: dataDaoInfo._CID,
-        amountCollected: (dataDaoInfo._amountStored / 1000000000000000000) //ethers has 18 decimal places
+      setDatasetDetails({
+        datasetInfo: dataset,
+        buyers: datasetInformation._buyers,
+        cid: datasetInformation._CID,
+        amountCollected: (
+          datasetInformation._amountStored / 1000000000000000000
+        ) //ethers has 18 decimal places
           .toString(),
       });
     }
   }
 
   //render functions
-  function renderAllDataDaos(dataDao: DataDao) {
+  function renderAllDatasets(dataset: Dataset) {
     return (
       <div className={styles.createDataContainer}>
-        <h4 className={styles.paragraphText}>Title: {dataDao.title}</h4>
+        <h4 className={styles.paragraphText}>Title: {dataset.title}</h4>
         <p className={styles.paragraphText}>
-          Description: {dataDao.description}
+          Description: {dataset.description}
         </p>
-        <p className={styles.paragraphText}>Price: {dataDao.price} TFIL</p>
+        <p className={styles.paragraphText}>Price: {dataset.price} TFIL</p>
         <p className={styles.paragraphText}>
-          Seller Address: {dataDao.sellerAddress}
+          Seller Address: {dataset.sellerAddress}
         </p>
         <button
           className={styles.viewDataDaoBtn}
           onClick={() => {
-            getActiveDataDaoDetails(dataDao);
+            getActiveDatasetDetails(dataset);
           }}
         >
           View Details
@@ -406,42 +410,42 @@ export default function Home() {
     );
   }
 
-  function renderActiveDataDao(dataDao: DataDaoDetails) {
+  function renderActiveDataset(dataset: DatasetDetails) {
     //check if current user is the seller
 
     let isSeller =
-      dataDao.dataDaoInfo.sellerAddress.toLowerCase() === currentWalletAddress;
+      dataset.datasetInfo.sellerAddress.toLowerCase() === currentWalletAddress;
 
     //check if current user has made a purchase
-    let hasCurrentBuyerMadeAPurchase = dataDao.buyers.some(
+    let hasCurrentBuyerMadeAPurchase = dataset.buyers.some(
       (buyer) => buyer.toLowerCase() === currentWalletAddress
     );
 
     return (
       <div className={styles.activeDataDaoContainer}>
         <div>
-          <h1 className={styles.paragraphText}>{dataDao.dataDaoInfo.title} </h1>
+          <h1 className={styles.paragraphText}>{dataset.datasetInfo.title} </h1>
           <div className={styles.paragraphText}>
             {" "}
-            Description: {dataDao.dataDaoInfo.description}
+            Description: {dataset.datasetInfo.description}
           </div>
           <p className={styles.paragraphText}>
-            Seller : {dataDao.dataDaoInfo.sellerAddress}{" "}
+            Seller : {dataset.datasetInfo.sellerAddress}{" "}
           </p>
           <p className={styles.paragraphText}>
-            Price : {dataDao.dataDaoInfo.price}
+            Price : {dataset.datasetInfo.price}
             {" TFIL"}
           </p>
 
           {isSeller ? (
             <p className={styles.paragraphText}>
-              Amount that can be withdrawn : {dataDao.amountCollected}
+              Amount that can be withdrawn : {dataset.amountCollected}
               {" TFIL"}
             </p>
           ) : null}
 
           <p className={styles.paragraphText}>
-            No of buyers: {dataDao.buyers.length}{" "}
+            No of buyers: {dataset.buyers.length}{" "}
           </p>
 
           <div style={{ display: "flex" }}>
@@ -450,17 +454,17 @@ export default function Home() {
             </p>
             <p className={styles.hyperlinkText}>
               <Link
-                href={`https://hyperspace.filfox.info/en/address/${dataDao.dataDaoInfo.dataDaoSCAddress}`}
+                href={`https://hyperspace.filfox.info/en/address/${dataset.datasetInfo.datasetSCAddress}`}
                 target="_blank"
               >
-                {dataDao.dataDaoInfo.dataDaoSCAddress}
+                {dataset.datasetInfo.datasetSCAddress}
               </Link>
             </p>
           </div>
           {!isSeller && !hasCurrentBuyerMadeAPurchase ? (
             <button
               className={styles.placeOrderBtn}
-              onClick={() => buyDataSet(dataDao)}
+              onClick={() => buyDataSet(dataset)}
             >
               Buy Data Dao Set
             </button>
@@ -469,16 +473,16 @@ export default function Home() {
           {!isSeller && hasCurrentBuyerMadeAPurchase ? (
             <button
               className={styles.downloadDataDaoBtn}
-              onClick={() => downloadDataSet(dataDao)}
+              onClick={() => downloadDataSet(dataset)}
             >
               Download Data set
             </button>
           ) : null}
 
-          {isSeller && parseFloat(dataDao.amountCollected) > 0 ? (
+          {isSeller && parseFloat(dataset.amountCollected) > 0 ? (
             <button
               className={styles.withdrawFundsBtn}
-              onClick={() => withdrawFunds(dataDao)}
+              onClick={() => withdrawFunds(dataset)}
             >
               Withdraw Funds
             </button>
@@ -486,7 +490,7 @@ export default function Home() {
 
           <button
             className={styles.backBtn}
-            onClick={() => setDataDaoDetails(null)}
+            onClick={() => setDatasetDetails(null)}
           >
             Back to home page
           </button>
@@ -532,7 +536,7 @@ export default function Home() {
 
         <h2 className={styles.allDatasets}>
           {(() => {
-            if (activeDataDaoDetails == null) {
+            if (activeDatasetDetails == null) {
               return <div>{`All Data sets`}</div>;
             } else {
               return <div>{``}</div>;
@@ -541,12 +545,12 @@ export default function Home() {
         </h2>
 
         <div>
-          {activeDataDaoDetails != null ? (
-            renderActiveDataDao(activeDataDaoDetails)
+          {activeDatasetDetails != null ? (
+            renderActiveDataset(activeDatasetDetails)
           ) : (
             <>
               <div>
-                {allDataDao.map((dataDao) => renderAllDataDaos(dataDao))}
+                {allDatasets.map((dataset) => renderAllDatasets(dataset))}
               </div>
               <div className={styles.createDataContainer}>
                 <h2 className={styles.createDataset}>Create New Data set </h2>
