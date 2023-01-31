@@ -22,7 +22,7 @@
 				"type": "string"
 			}
 		],
-		"name": "createDataDao",
+		"name": "createDataset",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -41,7 +41,7 @@
 				"type": "address"
 			}
 		],
-		"name": "dataDaoIDs",
+		"name": "datasetIDs",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -60,10 +60,10 @@
 				"type": "uint256"
 			}
 		],
-		"name": "dataDaoList",
+		"name": "datasetList",
 		"outputs": [
 			{
-				"internalType": "contract DataDao",
+				"internalType": "contract Dataset",
 				"name": "",
 				"type": "address"
 			}
@@ -75,11 +75,11 @@
 		"inputs": [
 			{
 				"internalType": "address[]",
-				"name": "_dataDaoList",
+				"name": "_datasetList",
 				"type": "address[]"
 			}
 		],
-		"name": "getDataDaoInformation",
+		"name": "getDatasetInformation",
 		"outputs": [
 			{
 				"internalType": "address[]",
@@ -107,11 +107,11 @@
 	},
 	{
 		"inputs": [],
-		"name": "getDataDaoList",
+		"name": "getDatasetList",
 		"outputs": [
 			{
 				"internalType": "address[]",
-				"name": "_dataDaoList",
+				"name": "_datasetList",
 				"type": "address[]"
 			}
 		],

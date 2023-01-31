@@ -9,8 +9,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 //ABIs
-import dataDaoABI from "../utils/dataDaoABI.json";
-import dataDaoManagerABI from "../utils/dataDaoManagerABI.json";
+import datasetABI from "../utils/datasetABI.json";
+import datasetManagerABI from "../utils/datasetManagerABI.json";
 
 type DataDao = {
   sellerAddress: string;
@@ -28,12 +28,11 @@ type DataDaoDetails = {
 };
 
 export default function Home() {
-  const dataDAOManagerContract =
-    "REPLACE_YOUR_DAOMANAGER_SMART_CONTRACT_ADDRESS"; //dataDAO Manager smart contract address
+  const dataDAOManagerContract = "0xdF652F24d243f22D12882C9f09ebeFbF55d5e7c1"; //dataDAO Manager smart contract address
 
   //variables
   const [token, setToken] = useState<string>(
-    "REPLACE_WITH_YOUR_WEB3STORAGE_API_TOKEN"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGU5N0RDODlFQ0E3NEUxZEVCNDhDYmY4ZjVCODAwRWRCODM1MjlBOEQiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzI3MTY3MzQ1MDcsIm5hbWUiOiJteVRva2VuIn0.9ycmydenwBvA1a24WGLn4E3kH2C5UYgChY9B4-_ZxJU"
   );
   const [isLoading, setIsLoading] = useState(false);
   const [loadedData, setLoadedData] = useState("Loading...");
@@ -85,20 +84,41 @@ export default function Home() {
       //create contract instance
       const dataDAOManagerContractInstance = new ethers.Contract(
         dataDAOManagerContract,
-        dataDaoManagerABI,
+        datasetManagerABI,
         signer
       );
 
       //(1) call the getDataDaoList function from the contract to get all Data Dao contract addresses
-
+      const allDataDaoAddresses =
+        await dataDAOManagerContractInstance.getDatasetList();
       //(2) call getDataDaoInformation function from contract to retrieve all information on each Data DAO
-
+      const allDataDaoData =
+        await dataDAOManagerContractInstance.getDatasetInformation(
+          allDataDaoAddresses
+        );
       // declare new array
       let newDataDAOs = [];
 
       //(3) iterate and loop through the data retrieve from the blockchain
+      for (let i = 0; i < allDataDaoData.sellerAddress.length; i++) {
+        let sellerAddress: string = allDataDaoData.sellerAddress[i];
+        let title: string = allDataDaoData.title[i];
+        let description: string = allDataDaoData.description[i];
+        let price = allDataDaoData.price[i];
+        let dataDaoSCAddress: string = allDataDaoAddresses[i];
 
+        let newDataDao: DataDao = {
+          sellerAddress,
+          title,
+          description,
+          price: (price / 1000000000000000000).toString(), //ethers/TFIL has 18 decimal places
+          dataDaoSCAddress,
+        };
+        //add into array
+        newDataDAOs.push(newDataDao);
+      }
       //(4) set data into react state variable
+      setAllDataDao(newDataDAOs);
     }
   }
 
@@ -138,15 +158,21 @@ export default function Home() {
         //create DataDAO manager contract instance
         const dataDAOManagerContractInstance = new ethers.Contract(
           dataDAOManagerContract,
-          dataDaoManagerABI,
+          datasetManagerABI,
           signer
         );
 
         // (5) call dataDAO Manager create dataDAO function from the contract
-
+        let { hash } = await dataDAOManagerContractInstance.createDataset(
+          title,
+          description,
+          ethers.utils.parseEther(price.toString()),
+          cid
+        );
         // (6) wait for transaction to be mined
-
+        await provider.waitForTransaction(hash);
         // (7) display alert message
+        alert(`Transaction sent! Hash: ${hash}`);
       }
 
       //call getAllDataSets function to refresh the current list of dataDaoSets
@@ -183,13 +209,19 @@ export default function Home() {
         const signer = provider.getSigner();
 
         // (8) create DataDAO contract instance
-
+        const dataDAOContractInstance = new ethers.Contract(
+          dataDao.dataDaoInfo.dataDaoSCAddress,
+          datasetABI,
+          signer
+        );
         // (9) call buyDataSet function from the dataDao smart contract
-
+        let { hash } = await dataDAOContractInstance.buyDataSet({
+          value: ethers.utils.parseEther(dataDao.dataDaoInfo.price), //amount to transfer to smart contract to hold
+        });
         // (10)  wait for transaction to be mined
-
+        await provider.waitForTransaction(hash);
         // (11) display alert message
-
+        alert(`Transaction sent! Hash: ${hash}`);
         //call getActiveDataDaoDetails function to get updated data
         await getActiveDataDaoDetails(dataDao.dataDaoInfo);
 
@@ -218,15 +250,16 @@ export default function Home() {
         //create DataDAO contract instance
         const dataDAOContractInstance = new ethers.Contract(
           dataDao.dataDaoInfo.dataDaoSCAddress,
-          dataDaoABI,
+          datasetABI,
           signer
         );
 
         // (12) call withdrawFunds function from the dataDao smart contract
-
+        let { hash } = await dataDAOContractInstance.withdrawFunds();
         // (13)  wait for transaction to be mined
-
+        await provider.waitForTransaction(hash);
         // (14) display alert message
+        alert(`Transaction sent! Hash: ${hash}`);
       }
       //call getActiveDataDaoDetails function to get updated data
       await getActiveDataDaoDetails(dataDao.dataDaoInfo);
@@ -333,7 +366,7 @@ export default function Home() {
       //create contract instance
       const dataDAOContractInstance = new ethers.Contract(
         dataDao.dataDaoSCAddress,
-        dataDaoABI,
+        datasetABI,
         signer
       );
 
@@ -500,7 +533,7 @@ export default function Home() {
         <h2 className={styles.allDatasets}>
           {(() => {
             if (activeDataDaoDetails == null) {
-              return <div>{`All Data Dao sets`}</div>;
+              return <div>{`All Data sets`}</div>;
             } else {
               return <div>{``}</div>;
             }
@@ -582,7 +615,7 @@ export default function Home() {
                     className={styles.createDataDAOBtn}
                     onClick={() => createDataset()}
                   >
-                    Create a new Data DAO
+                    Create a new Data set
                   </button>
                 </div>
               </div>
