@@ -20,6 +20,11 @@
 				"internalType": "string",
 				"name": "_CID",
 				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_category",
+				"type": "string"
 			}
 		],
 		"name": "createDataset",
@@ -100,6 +105,11 @@
 				"internalType": "uint256[]",
 				"name": "price",
 				"type": "uint256[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "category",
+				"type": "string[]"
 			}
 		],
 		"stateMutability": "view",

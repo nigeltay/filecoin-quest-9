@@ -11,19 +11,36 @@
   font-family: var(--font-mono);
   color: white;
   margin: 20px;
-text-align: right;
+  text-align: right;
+}
+
+.category {
+  padding: 10px;
+  border-style: ridge;
+  border-color: grey;
+}
+
+.category:hover {
+  background-color: grey;
+  cursor: pointer;
+}
+
+.bottomBody {
+  background-color: rgb(10, 10, 23);
+  padding-bottom: 10px;
+  min-width: 500px;
 }
 
 .topPanel {
   display: flex;
   justify-content: space-between;
-  background-color: purple;
+  background-color: black;
   padding-left: 5px
 }
 
 .allDatasets {
   font-family: var(--font-mono);
-  color: black;
+  color: white;
   padding-left: 25px;
   padding-top: 20px;
 
@@ -31,16 +48,17 @@ text-align: right;
 
 .createDataset {
   font-family: var(--font-mono);
-  color: black;
+  color: white;
   margin: 20px;
 }
 
 .createDataContainer {
   font-family: var(--font-mono);
   color: black;
-  margin: 20px;
+  margin: 2px;
   border-color: black;
   border-style: groove;
+  background-color: black;
 }
 
 .dropZoneStyle {
@@ -62,7 +80,7 @@ text-align: right;
 .paragraphText {
   font-family: var(--font-mono);
   margin: 10px;
-  color: black;
+  color: white;
 }
 
 .createDataDAOBtn {
@@ -70,6 +88,22 @@ text-align: right;
   padding: 10px;
   color: white;
   background-color: blue;
+}
+
+.viewAllDataDaoBtn {
+  margin-top: 10px;
+  margin-left: 10px;
+  padding: 10px;
+  color: white;
+  background-color: orange;
+}
+
+.backToCreatePage {
+  margin-top: 10px;
+  margin-left: 10px;
+  padding: 10px;
+  color: white;
+  background-color: purple;
 }
 
 .viewDataDaoBtn {
