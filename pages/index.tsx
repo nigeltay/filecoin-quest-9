@@ -129,17 +129,10 @@ export default function Home() {
         );
 
         // (5) call dataset Manager createDataset function from the contract
-        let { hash } = await datasetManagerContractInstance.createDataset(
-          title,
-          description,
-          ethers.utils.parseEther(price.toString()),
-          cid,
-          category
-        );
+
         // (6) wait for transaction to be mined
-        await provider.waitForTransaction(hash);
+
         // (7) display alert message
-        alert(`Transaction sent! Hash: ${hash}`);
       }
 
       //reset fields back to default values
