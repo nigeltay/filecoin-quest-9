@@ -278,38 +278,36 @@ export default function Home() {
         return alert("Please join the DAO before creating the proposal.");
       }
       setVotingModalOpen(false);
-      await loadingModal();
-      setTimeout(async () => {
-        //call smart contract
-        const { ethereum } = window;
-        if (ethereum) {
-          //set loading modal to open and loading modal text
-          setLoadedData("Voting...Please wait");
-          openModal();
 
-          const provider = new ethers.providers.Web3Provider(ethereum);
-          const signer = provider.getSigner();
+      //call smart contract
+      const { ethereum } = window;
+      if (ethereum) {
+        //set loading modal to open and loading modal text
+        setLoadedData("Voting...Please wait");
+        openModal();
 
-          //create DataDao contract instance
-          const dataDAOContractInstance = new ethers.Contract(
-            dataDaoContractAddress,
-            dataDaoABI,
-            signer
-          );
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
 
-          //(10) call joinDataDao function from the datadao contract
+        //create DataDao contract instance
+        const dataDAOContractInstance = new ethers.Contract(
+          dataDaoContractAddress,
+          dataDaoABI,
+          signer
+        );
 
-          //(11) wait for transaction to be mined
+        //(10) call joinDataDao function from the datadao contract
 
-          //(12) display alert message
+        //(11) wait for transaction to be mined
 
-          // get updated proposal details
-          await getActiveProposalDetails(proposal.proposalInfo);
+        //(12) display alert message
 
-          //close modal
-          closeModal();
-        }
-      }, 3100);
+        // get updated proposal details
+        await getActiveProposalDetails(proposal.proposalInfo);
+
+        //close modal
+        closeModal();
+      }
     } catch (error) {
       console.log(error);
       closeModal();
@@ -381,11 +379,17 @@ export default function Home() {
 
     setTimeout(async () => {
       setDatasetVerificaionStatus("Verification Success!");
-    }, 2000);
+    }, 2500);
 
     setTimeout(async () => {
       setIsVerifying(false);
     }, 3000);
+
+    setDatasetVerificaionStatus("Verifying Datset.....");
+
+    setTimeout(async () => {
+      setVotingModalOpen(true);
+    }, 3100);
   }
 
   const customStyles = {
@@ -566,7 +570,7 @@ export default function Home() {
               parseInt(proposal.noOfNo) + parseInt(proposal.noOfYes) !== 2 ? (
                 <button
                   className={styles.yesBtn}
-                  onClick={() => setVotingModalOpen(true)}
+                  onClick={() => loadingModal()}
                 >
                   Proceed to Vote
                 </button>
