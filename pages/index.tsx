@@ -119,39 +119,11 @@ export default function Home() {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
 
-      //create DataDao contract instance
-      const dataDAOContractInstance = new ethers.Contract(
-        smartContractAddress,
-        dataDaoABI,
-        signer
-      );
+      //(1) create DataDao contract instance
 
-      //call getTradingProposalList function
-      const allTradingProposals =
-        await dataDAOContractInstance.getTradingProposalList();
+      //(2) call getTradingProposalList function
 
-      let newProposals = [];
-
-      for (let i = 0; i < allTradingProposals.title.length; i++) {
-        let status: string = allTradingProposals.status[i];
-        let title: string = allTradingProposals.title[i];
-        let description: string = allTradingProposals.description[i];
-        let tradingProposalContractAddress =
-          allTradingProposals.tradingProposalContractAddress[i];
-
-        let proposal: Proposal = {
-          status,
-          title,
-          description,
-          contractAddress: tradingProposalContractAddress,
-        };
-
-        //add to array
-        newProposals.push(proposal);
-      }
-
-      //set proposal data into variable
-      setAllProposals(newProposals);
+      //(3) set proposal data into variable
 
       //check if user has joined DAO
       await checkIfUserJoinedDao(smartContractAddress);
@@ -180,13 +152,11 @@ export default function Home() {
           signer
         );
 
-        // call joinDataDao function from the datadao contract
-        let { hash } = await dataDAOContractInstance.joinDataDao();
+        //(4) call joinDataDao function from the datadao contract
 
-        // wait for transaction to be mined
-        await provider.waitForTransaction(hash);
-        // display alert message
-        alert(`Transaction sent! Hash: ${hash}`);
+        //(5) wait for transaction to be mined
+
+        //(6) display alert message
 
         //update that user has joined the dao
         await checkIfUserJoinedDao(dataDaoContractAddress);
@@ -230,15 +200,11 @@ export default function Home() {
           signer
         );
 
-        // call joinDataDao function from the datadao contract
-        let { hash } = await dataDAOContractInstance.createTradingProposal(
-          title,
-          description
-        );
-        // wait for transaction to be mined
-        await provider.waitForTransaction(hash);
-        // display alert message
-        alert(`Transaction sent! Hash: ${hash}`);
+        //(7) call joinDataDao function from the datadao contract
+
+        //(8) wait for transaction to be mined
+
+        //(9) display alert message
 
         //get updated proposals
         await getAllProposalDetails(dataDaoContractAddress);
@@ -329,15 +295,11 @@ export default function Home() {
           signer
         );
 
-        // call joinDataDao function from the datadao contract
-        let { hash } = await dataDAOContractInstance.vote(
-          proposal.proposalInfo.contractAddress,
-          yesOrNo
-        );
-        // wait for transaction to be mined
-        await provider.waitForTransaction(hash);
-        // display alert message
-        alert(`Transaction sent! Hash: ${hash}`);
+        //(10) call joinDataDao function from the datadao contract
+
+        //(11) wait for transaction to be mined
+
+        //(12) display alert message
 
         // get updated proposal details
         await getActiveProposalDetails(proposal.proposalInfo);
