@@ -52,7 +52,6 @@ export default function Home() {
     useState<ProposalDetails | null>(null);
 
   const [isVotingModalOpen, setVotingModalOpen] = useState(false);
-  // const [daoListStatus, setDaoListStatus] = useState("Not Listed");
   const [DAOListedModalOpen, setDAOListedModalOpen] = useState(false);
 
   function onChangeSectionClick(section: SubSection) {
@@ -291,7 +290,6 @@ export default function Home() {
         await dataDAOContractInstance.checkIfDatasetIsListed(
           proposal.contractAddress
         );
-      console.log(hasDataBeenListed);
 
       setProposalDetails({
         proposalInfo: proposal,
@@ -523,13 +521,6 @@ export default function Home() {
     if (parseFloat(proposal.noOfYes) === 2) {
       votingProposalStatus = "Success";
     }
-
-    // if (
-    //   parseFloat(proposal.noOfNo) === 1 &&
-    //   parseFloat(proposal.noOfNo) === 1
-    // ) {
-    //   votingProposalStatus = "Trading Proposal Failed";
-    // }
 
     let colour = "purple";
     if (votingProposalStatus === "Success") {
