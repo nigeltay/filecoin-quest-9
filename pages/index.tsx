@@ -30,7 +30,7 @@ type ProposalDetails = {
 };
 
 export type SubSection = "Proposals" | "New Proposal";
-
+type verificationStatus = "Verifying Datset....." | "Verification Success!";
 export default function Home() {
   //variables
   const [dataDaoContractAddress, setSmartContractAddress] =
@@ -50,10 +50,11 @@ export default function Home() {
   const [allProposals, setAllProposals] = useState<Proposal[]>([]);
   const [activeProposalDetails, setProposalDetails] =
     useState<ProposalDetails | null>(null);
-
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isVotingModalOpen, setVotingModalOpen] = useState(false);
   const [DAOListedModalOpen, setDAOListedModalOpen] = useState(false);
-
+  const [datasetVerificationStatus, setDatasetVerificaionStatus] =
+    useState<verificationStatus>("Verifying Datset.....");
   function onChangeSectionClick(section: SubSection) {
     setProposalDetails(null);
     setSection(section);
@@ -277,36 +278,38 @@ export default function Home() {
         return alert("Please join the DAO before creating the proposal.");
       }
       setVotingModalOpen(false);
+      await loadingModal();
+      setTimeout(async () => {
+        //call smart contract
+        const { ethereum } = window;
+        if (ethereum) {
+          //set loading modal to open and loading modal text
+          setLoadedData("Voting...Please wait");
+          openModal();
 
-      //call smart contract
-      const { ethereum } = window;
-      if (ethereum) {
-        //set loading modal to open and loading modal text
-        setLoadedData("Voting...Please wait");
-        openModal();
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
 
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
+          //create DataDao contract instance
+          const dataDAOContractInstance = new ethers.Contract(
+            dataDaoContractAddress,
+            dataDaoABI,
+            signer
+          );
 
-        //create DataDao contract instance
-        const dataDAOContractInstance = new ethers.Contract(
-          dataDaoContractAddress,
-          dataDaoABI,
-          signer
-        );
+          //(10) call joinDataDao function from the datadao contract
 
-        //(10) call joinDataDao function from the datadao contract
+          //(11) wait for transaction to be mined
 
-        //(11) wait for transaction to be mined
+          //(12) display alert message
 
-        //(12) display alert message
+          // get updated proposal details
+          await getActiveProposalDetails(proposal.proposalInfo);
 
-        // get updated proposal details
-        await getActiveProposalDetails(proposal.proposalInfo);
-
-        //close modal
-        closeModal();
-      }
+          //close modal
+          closeModal();
+        }
+      }, 3100);
     } catch (error) {
       console.log(error);
       closeModal();
@@ -372,6 +375,17 @@ export default function Home() {
       setSmartContractAddress(addr);
       getAllProposalDetails(addr);
     }
+  }
+  async function loadingModal() {
+    setIsVerifying(true);
+
+    setTimeout(async () => {
+      setDatasetVerificaionStatus("Verification Success!");
+    }, 2000);
+
+    setTimeout(async () => {
+      setIsVerifying(false);
+    }, 3000);
   }
 
   const customStyles = {
@@ -646,6 +660,15 @@ export default function Home() {
           contentLabel="Example Modal"
         >
           {loadedData}
+        </Modal>
+
+        <Modal
+          isOpen={isVerifying}
+          //onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          {datasetVerificationStatus}
         </Modal>
 
         <Modal
