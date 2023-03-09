@@ -639,7 +639,7 @@ export default function Home() {
               {proposal.proposedBy.toLowerCase() !== currentWalletAddress &&
               parseInt(proposal.noOfNo) + parseInt(proposal.noOfYes) === 2 &&
               proposal.hasDatasetbeenListed === true ? (
-                <button className={styles.yesBtn}>Buy</button>
+                <button className={styles.yesBtn}>Buy Dataset</button>
               ) : null}
 
               <button
