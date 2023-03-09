@@ -27,6 +27,7 @@ type ProposalDetails = {
   cid: string;
   hasCurrentUserVoted: boolean;
   hasDatasetbeenListed: boolean;
+  price: string;
 };
 
 export type SubSection = "Proposals" | "New Proposal";
@@ -40,10 +41,10 @@ export default function Home() {
   const [loadedData, setLoadedData] = useState("Loading...");
 
   const [currentWalletAddress, setCurrentWalletAddress] = useState<string>("");
-
+  const [openPriceModal, setOpenPriceModal] = useState(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-
+  const [price, setPrice] = useState("");
   const [section, setSection] = useState<SubSection>("Proposals");
   const [hasJoinedDao, setHasJoinedDao] = useState<Boolean>(false);
 
@@ -267,6 +268,7 @@ export default function Home() {
         cid: info._cid,
         hasCurrentUserVoted: hasVoted,
         hasDatasetbeenListed: hasDataBeenListed,
+        price: (info._listedPrice / 1000000000000000000).toString(),
       });
     }
   }
@@ -321,7 +323,12 @@ export default function Home() {
       return alert("Proposal has not passed.");
     }
 
+    if (!price) {
+      return alert("Fill in the price field.");
+    }
+
     try {
+      setOpenPriceModal(false);
       //call smart contract
       const { ethereum } = window;
       if (ethereum) {
@@ -341,7 +348,8 @@ export default function Home() {
 
         // call listDataset function from the datadao contract
         let { hash } = await dataDAOContractInstance.listDataset(
-          proposal.proposalInfo.contractAddress
+          proposal.proposalInfo.contractAddress,
+          ethers.utils.parseEther(price.toString())
         );
 
         // wait for transaction to be mined
@@ -354,6 +362,7 @@ export default function Home() {
 
         //close modal
         closeModal();
+        setPrice("");
       }
 
       //upate list status to Listed
@@ -472,6 +481,57 @@ export default function Home() {
     );
   }
 
+  function renderModalForPriceInput(proposal: ProposalDetails) {
+    return (
+      <>
+        <div style={{ margin: "10px" }}>
+          Please input the listing price for your dataset
+        </div>
+        <div style={{ margin: "10px" }}>
+          <input
+            type="search"
+            placeholder="Add price here (TFIL)"
+            onChange={(e) => setPrice(e.target.value)}
+            value={price}
+            style={{
+              padding: "15px",
+              textAlign: "center",
+              display: "block",
+              backgroundColor: "black",
+              color: "white",
+              width: "500px",
+              marginBottom: "10px",
+              marginTop: "10px",
+              textAlignLast: "left",
+            }}
+          />
+        </div>
+
+        <div style={{ display: "flex" }}>
+          <div>
+            {proposal.proposedBy.toLowerCase() === currentWalletAddress ? (
+              <button
+                className={styles.yesBtn}
+                onClick={() => listDataDao(proposal)}
+              >
+                Confirm
+              </button>
+            ) : null}
+          </div>
+
+          <div>
+            <button
+              className={styles.noBtn}
+              onClick={() => setOpenPriceModal(false)}
+            >
+              back
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   function renderAllProposals(proposal: Proposal) {
     return (
       <div className={styles.allProposalContainer}>
@@ -576,6 +636,12 @@ export default function Home() {
                 </button>
               ) : null}
 
+              {proposal.proposedBy.toLowerCase() !== currentWalletAddress &&
+              parseInt(proposal.noOfNo) + parseInt(proposal.noOfYes) === 2 &&
+              proposal.hasDatasetbeenListed === true ? (
+                <button className={styles.yesBtn}>Buy</button>
+              ) : null}
+
               <button
                 className={styles.backBtn}
                 onClick={() => setProposalDetails(null)}
@@ -588,7 +654,7 @@ export default function Home() {
               proposal.hasDatasetbeenListed === false ? (
                 <button
                   className={styles.listDAOBtn}
-                  onClick={() => listDataDao(proposal)}
+                  onClick={() => setOpenPriceModal(true)}
                 >
                   List your Dataset
                 </button>
@@ -625,7 +691,9 @@ export default function Home() {
                       </Link>
                     </p>
                   </div>
-
+                  <p className={styles.paragraphText}>
+                    Price: {proposal.price} TFIL
+                  </p>
                   <p className={styles.paragraphText}>Data Cid:</p>
                   <p className={styles.shortenParagraphText}>{proposal.cid}</p>
                 </>
@@ -700,6 +768,20 @@ export default function Home() {
           <div>
             {activeProposalDetails != null
               ? renderModalForVoting(activeProposalDetails as ProposalDetails)
+              : null}
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={openPriceModal} //change variable
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <div>
+            {activeProposalDetails != null
+              ? renderModalForPriceInput(
+                  activeProposalDetails as ProposalDetails
+                )
               : null}
           </div>
         </Modal>

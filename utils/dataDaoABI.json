@@ -161,6 +161,11 @@
 				"internalType": "string",
 				"name": "_cid",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_listedPrice",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -245,6 +250,11 @@
 				"internalType": "address",
 				"name": "tradingProposalAddress",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
 			}
 		],
 		"name": "listDataset",
