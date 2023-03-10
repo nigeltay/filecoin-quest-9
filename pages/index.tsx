@@ -31,7 +31,7 @@ type ProposalDetails = {
 };
 
 export type SubSection = "Proposals" | "New Proposal";
-type verificationStatus = "Verifying Datset....." | "Verification Success!";
+type verificationStatus = "Verifying Dataset....." | "Verification Success!";
 export default function Home() {
   //variables
   const [dataDaoContractAddress, setSmartContractAddress] =
@@ -47,15 +47,16 @@ export default function Home() {
   const [price, setPrice] = useState("");
   const [section, setSection] = useState<SubSection>("Proposals");
   const [hasJoinedDao, setHasJoinedDao] = useState<Boolean>(false);
-
+  const [isVerificationSuccessModalOpen, setVerificationSuccessModal] =
+    useState<boolean>(false);
   const [allProposals, setAllProposals] = useState<Proposal[]>([]);
   const [activeProposalDetails, setProposalDetails] =
     useState<ProposalDetails | null>(null);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isVotingModalOpen, setVotingModalOpen] = useState(false);
   const [DAOListedModalOpen, setDAOListedModalOpen] = useState(false);
-  const [datasetVerificationStatus, setDatasetVerificaionStatus] =
-    useState<verificationStatus>("Verifying Datset.....");
+  const [datasetVerificationStatus, setDatasetVerificationStatus] =
+    useState<verificationStatus>("Verifying Dataset.....");
   function onChangeSectionClick(section: SubSection) {
     setProposalDetails(null);
     setSection(section);
@@ -387,18 +388,34 @@ export default function Home() {
     setIsVerifying(true);
 
     setTimeout(async () => {
-      setDatasetVerificaionStatus("Verification Success!");
+      setVerificationSuccessModal(true);
     }, 2500);
+  }
 
-    setTimeout(async () => {
-      setIsVerifying(false);
-    }, 3000);
+  function closeAndOpen() {
+    setVerificationSuccessModal(false);
+    setIsVerifying(false);
+    setVotingModalOpen(true);
+  }
 
-    setDatasetVerificaionStatus("Verifying Datset.....");
-
-    setTimeout(async () => {
-      setVotingModalOpen(true);
-    }, 3100);
+  function renderModalForSuccessVerification(proposal: ProposalDetails) {
+    return (
+      <>
+        <div style={{ paddingLeft: "20px" }}>Verification Success!</div>
+        <div style={{ display: "flex" }}>
+          <div>
+            {proposal.proposedBy.toLowerCase() !== currentWalletAddress ? (
+              <button
+                className={styles.proceedToVoteBtn}
+                onClick={() => closeAndOpen()}
+              >
+                Proceed to vote
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </>
+    );
   }
 
   const customStyles = {
@@ -773,6 +790,20 @@ export default function Home() {
         </Modal>
 
         <Modal
+          isOpen={isVerificationSuccessModalOpen} //change variable
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <div>
+            {activeProposalDetails != null
+              ? renderModalForSuccessVerification(
+                  activeProposalDetails as ProposalDetails
+                )
+              : null}
+          </div>
+        </Modal>
+
+        <Modal
           isOpen={openPriceModal} //change variable
           style={customStyles}
           contentLabel="Example Modal"
@@ -869,13 +900,29 @@ export default function Home() {
                       {activeProposalDetails != null ? (
                         renderActiveProposal(activeProposalDetails)
                       ) : (
-                        <>
+                        <div style={{ display: "flex" }}>
                           <div>
                             {allProposals.map((proposal) =>
                               renderAllProposals(proposal)
                             )}
                           </div>
-                        </>
+                          <div>
+                            <div
+                              className={styles.voteResultsContainer}
+                              style={{ marginTop: "20px" }}
+                            >
+                              <h4 style={{ color: "white", padding: "10px" }}>
+                                DAO Information
+                              </h4>
+                            </div>
+                            <div className={styles.voteResultsContainer}>
+                              <div style={{ color: "white", padding: "10px" }}>
+                                Current Dataset stored: Research Dataset JSON
+                                File
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </>

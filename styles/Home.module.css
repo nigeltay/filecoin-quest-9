@@ -75,6 +75,7 @@
   border-width: 0.6px;
   padding-bottom: 20px;
   margin-top: 20px;
+  width: 800px;
 }
 
 .allProposalContainer:hover {
@@ -321,6 +322,13 @@
   cursor: pointer;
 }
 
+.proceedToVoteBtn {
+  margin: 10px;
+  padding: 10px;
+  background-color: green;
+  color: white;
+  width: 225px; 
+}
 
 .placeOrderBtn {
   padding: 10px;
