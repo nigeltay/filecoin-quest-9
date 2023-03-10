@@ -29,6 +29,7 @@
   background-color: rgb(33, 32, 32);
   padding-bottom: 10px;
   min-width: 500px;
+  min-height: calc(100vh);
 }
 
 .topPanel {
@@ -91,6 +92,7 @@
   font-family: var(--font-mono);
   padding-left: 20px;
   padding-top: 25px;
+  color: white;
 }
 
 .normalHeader {

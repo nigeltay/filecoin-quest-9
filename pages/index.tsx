@@ -318,7 +318,7 @@ export default function Home() {
     }
   }
 
-  async function listDataDao(proposal: ProposalDetails) {
+  async function listDatasetFromDAO(proposal: ProposalDetails) {
     if (parseInt(proposal.noOfYes) !== 2) {
       return alert("Proposal has not passed.");
     }
@@ -512,7 +512,7 @@ export default function Home() {
             {proposal.proposedBy.toLowerCase() === currentWalletAddress ? (
               <button
                 className={styles.yesBtn}
-                onClick={() => listDataDao(proposal)}
+                onClick={() => listDatasetFromDAO(proposal)}
               >
                 Confirm
               </button>
