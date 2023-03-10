@@ -901,11 +901,22 @@ export default function Home() {
                         renderActiveProposal(activeProposalDetails)
                       ) : (
                         <div style={{ display: "flex" }}>
-                          <div>
-                            {allProposals.map((proposal) =>
-                              renderAllProposals(proposal)
-                            )}
-                          </div>
+                          {allProposals.length !== 0 ? (
+                            <div>
+                              {allProposals.map((proposal) =>
+                                renderAllProposals(proposal)
+                              )}
+                            </div>
+                          ) : (
+                            <div
+                              className={styles.emptyProposalContainer}
+                              style={{ color: "white" }}
+                            >
+                              No Proposals created yet, click on New Proposal to
+                              create one.
+                            </div>
+                          )}
+
                           <div>
                             <div
                               className={styles.voteResultsContainer}

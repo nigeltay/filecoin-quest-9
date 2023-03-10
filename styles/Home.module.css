@@ -65,6 +65,21 @@
   margin-top: 20px;
 }
 
+.emptyProposalContainer {
+  font-family: var(--font-mono);
+  color: black;
+  margin: 20px;
+  border-color: grey;
+  border-style: ridge;
+  background-color: rgb(33, 32, 32);
+  border-width: 0.6px;
+  padding-bottom: 20px;
+  margin-top: 20px;
+  width: 800px;
+  text-align: center;
+  padding: 50px;
+}
+
 .allProposalContainer {
   font-family: var(--font-mono);
   color: black;
